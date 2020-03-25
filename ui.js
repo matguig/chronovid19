@@ -1,4 +1,5 @@
 const moment = require('moment');
+const ansi = require('sisteransi');
 const sprintf = require('sprintf-js').sprintf;
 const say = require('say')
 
@@ -11,11 +12,13 @@ module.exports = class Ui {
         this.refreshSeconds = refreshSeconds;
         this.interval;
 
+        process.on('exit', this.stop.bind(this));
         moment.locale('fr');
     }
 
     start() {
         this.stop();
+        process.stdout.write(ansi.cursor.hide);
         this.interval = setInterval(this.refresh.bind(this), this.refreshSeconds);
     }
 
@@ -23,6 +26,7 @@ module.exports = class Ui {
         if (!this.interval) {
             return ;
         }
+        process.stdout.write(ansi.cursor.show);
         clearInterval(this.interval);
         delete this.interval;
         process.stdout.clearLine();
